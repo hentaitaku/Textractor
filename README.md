@@ -1,4 +1,4 @@
-# Textractor
+# Textractor [![Build status](https://ci.appveyor.com/api/projects/status/ya9591l2ma0wo0ww/branch/master?svg=true)](https://ci.appveyor.com/project/shoaibshakeel381/textractor/branch/master)
 
 ![How it looks](screenshot.png)
 
@@ -28,7 +28,7 @@ If you have trouble hooking a game, please show me a way to freely download it o
 ## Extensions
 
 See my [Example Extension project](https://github.com/Artikash/ExampleExtension) to see how to build an extension.<br>
-See the extensions folder for examples of what extensions can do. 
+See the extensions folder for examples of what extensions can do.
 
 ## Contributing
 

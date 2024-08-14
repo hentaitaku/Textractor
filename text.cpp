@@ -19,6 +19,7 @@
 
 // If you are updating a previous translation see https://github.com/Artikash/Textractor/issues/313
 
+const wchar_t* REPOSITORY = L"./repository/";
 const char* NATIVE_LANGUAGE = "English";
 const char* ATTACH = u8"Attach to game";
 const char* LAUNCH = u8"Launch game";
@@ -105,7 +106,7 @@ Please contact Artikash with any problems, feature requests, or questions relati
 You can do so via the project homepage (issues section) or via email
 Source code available under GPLv3 at project homepage
 If you like this project, please tell everyone about it! It's time to put AGTH down :))";
-const wchar_t* CL_OPTIONS = LR"(usage: Textractor [-p{process ID|"process name"}]...
+const wchar_t* CL_OPTIONS = LR"(usage: Textractor [-c] -e"ExtenDefPath" [-p{process ID|"process name"}]...
 example: Textractor -p4466 -p"My Game.exe" tries to inject processes with ID 4466 or with name My Game.exe)";
 const wchar_t* UPDATE_AVAILABLE = L"Update available: download it from https://github.com/Artikash/Textractor/releases";
 const wchar_t* ALREADY_INJECTED = L"Textractor: already injected";
@@ -154,6 +155,8 @@ const char* STOP_DEVTOOLS = u8"Stop DevTools";
 const char* HIDE_CHROME = u8"Hide Chrome window";
 const char* DEVTOOLS_STATUS = u8"DevTools status";
 const char* AUTO_START = u8"Start automatically";
+const char* SUGOI_HOST = u8"Sugoi Host (def:localhost)";
+const char* SUGOI_PORT = u8"Sugoi Port (def:14366)";
 const wchar_t* ERROR_START_CHROME = L"failed to start Chrome or to connect to it";
 const char* EXTRA_WINDOW_INFO = u8R"(Right click to change settings
 Click and drag on window edges to move, or the bottom right corner to resize)";
@@ -185,6 +188,7 @@ const char* CENTERED_TEXT = u8"Centered text";
 const char* AUTO_RESIZE_WINDOW_HEIGHT = u8"Auto resize window height";
 const char* CLICK_THROUGH = u8"Click through\tAlt+X";
 const char* HIDE_MOUSEOVER = u8"Hide while mouse on top";
+const char* HIDE_TEXT = u8"Hide/Show text\tAlt+T";
 const char* OPACITY = u8"Opacity";
 const char* BG_COLOR = u8"Background color";
 const char* TEXT_COLOR = u8"Text color";
@@ -193,6 +197,9 @@ const char* OUTLINE_COLOR = u8"Outline color";
 const char* OUTLINE_SIZE = u8"Outline size";
 const char* OUTLINE_SIZE_INFO = u8"Size in pixels (recommended to stay below 20% of the font size)";
 const char* FONT = u8"Font";
+const char* TIMER_HIDE_TEXT = u8"Timer hide text";
+const char* TEXT_TIMEOUT = u8"Timeout (msec, 0=disabled)";
+const char* TEXT_TIMEOUT_ADD_PER_CHAR = u8"Additional timeout per char (msec)";
 const char* LUA_INTRO = u8R"(--[[
 ProcessSentence is called each time Textractor receives a sentence of text.
 
@@ -614,7 +621,7 @@ padding: длина добавочных данных перед строкой 
 Сделать это вы можете на домашней странице (секция issues) или через электронную почту
 Исходный код доступен по лицензии GPLv3 на домашней странице проекта
 Если эта программа вам понравилась, расскажите всем о ней :))";
-	CL_OPTIONS = LR"(использование: Textractor [-p{process ID|"process name"}]...
+	CL_OPTIONS = LR"(использование: Textractor [-c] -e"ExtenDefPath" [-p{process ID|"process name"}]...
 пример: Textractor -p4466 -p"My Game.exe" попробует присоединиться к процессу с ID 4466 или с именем My Game.exe)";
 	UPDATE_AVAILABLE = L"Доступно обновление: загрузите его на https://github.com/Artikash/Textractor/releases";
 	ALREADY_INJECTED = L"Textractor: уже присоединен";
@@ -871,7 +878,7 @@ Puoi farlo attraverso la pagina principale del progetto (sezione issues) o via e
 Il codice sorgente è disponibile sotto il GPLv3 nella pagina principale
 Al momento sono in cerca di un nuovo lavoro: contattatemi per email se conoscete qualcuno che ingaggia periti informatici statunitensi
 Se ti piace questo progetto, parlane con tutti per favore :))";
-	CL_OPTIONS = LR"(utilizzo: Textractor [-p{process ID|"process name"}]...
+	CL_OPTIONS = LR"(utilizzo: Textractor [-c] -e"ExtenDefPath" [-p{process ID|"process name"}]...
 esempio: Textractor -p4466 -p"My Game.exe" sta tentando di inniettare i processi con l'ID 4466 o con il nome My Game.exe)";
 	UPDATE_AVAILABLE = L"Aggiornamento disponibile: scaricala da https://github.com/Artikash/Textractor/releases";
 	ALREADY_INJECTED = L"Textractor: già inniettato";
@@ -941,6 +948,7 @@ Funziona solo se questa estenzione è usata direttamente dopo un'estensione di t
 	AUTO_RESIZE_WINDOW_HEIGHT = u8"Auto resize altezza finestra";
 	CLICK_THROUGH = u8"Clicca attraverso\tAlt+X";
 	HIDE_MOUSEOVER = u8"Nascondi testo mouseover";
+	HIDE_TEXT = u8"Nascondi/Mostra testo\tAlt+T";
 	OPACITY = u8"Opacità";
 	BG_COLOR = u8"Colore dello sfondo";
 	TEXT_COLOR = u8"Colore del testo";
@@ -949,6 +957,9 @@ Funziona solo se questa estenzione è usata direttamente dopo un'estensione di t
 	OUTLINE_SIZE = u8"Dimensione del contorno";
 	OUTLINE_SIZE_INFO = u8"Dimensione in pixel (consigliato di rimanere sotto il 20% della dimensione del font)";
 	FONT = u8"Font";
+	TIMER_HIDE_TEXT = u8"Timer nascondi testo";
+	TEXT_TIMEOUT = u8"Timeout (msec, 0=disattivato)";
+	TEXT_TIMEOUT_ADD_PER_CHAR = u8"Timeout aggiuntivo per carattere (msec)";
 	LUA_INTRO = u8R"(--[[
 ProcessSentence è chiamato ogni volta che Textractor riceva una sentenza di testo.
 
@@ -1307,7 +1318,7 @@ Veuillez me contacter pour tout problème, demande de fonctionnalité ou questio
 Vous pouvez le faire via la page d'accueil du projet (section problèmes) ou par e-mail
 Code source disponible sous GPLv3 sur la page d'accueil du projet
 Si vous aimez ce projet, parlez-en à tout le monde :))";
-	CL_OPTIONS = LR"(usage: Textractor [-p{process ID|"process name"}]...
+	CL_OPTIONS = LR"(usage: Textractor [-c] -e"ExtenDefPath" [-p{process ID|"process name"}]...
 example: Textractor -p4466 -p"My Game.exe" tries to inject processes with ID 4466 or with name My Game.exe)";
 	UPDATE_AVAILABLE = L"Mise à jour disponible: téléchargez-la depuis https://github.com/Artikash/Textractor/releases";
 	ALREADY_INJECTED = L"Textractor: déjà injecté";

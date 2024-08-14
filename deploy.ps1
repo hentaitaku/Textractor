@@ -1,4 +1,4 @@
-﻿param([string]$version)
+﻿param([string]$version = "5.2.1")
 
 cd $PSScriptRoot;
 mkdir -Force -Verbose builds;
@@ -8,28 +8,32 @@ mkdir -Force -Verbose x64;
 
 foreach ($language in @{
 	ENGLISH="";
-	SPANISH="Spanish";
-	SIMPLIFIED_CHINESE="Simplified-Chinese";
-	RUSSIAN="Russian";
-	TURKISH="Turkish";
-	INDONESIAN="Indonesian";
-	PORTUGUESE="Portuguese";
-	THAI="Thai";
-	KOREAN="Korean";
-	ITALIAN="Italian";
-	FRENCH="French"
+	# SPANISH="Spanish";
+	# SIMPLIFIED_CHINESE="Simplified-Chinese";
+	# RUSSIAN="Russian";
+	# TURKISH="Turkish";
+	# INDONESIAN="Indonesian";
+	# PORTUGUESE="Portuguese";
+	# THAI="Thai";
+	# KOREAN="Korean";
+	# ITALIAN="Italian";
+	# FRENCH="French"
 }.GetEnumerator())
 {
 	$folder = "Textractor-$($language.Value)-$version";
-	rm -Force -Recurse -Verbose $folder;
+	if (Test-Path $folder) {
+		Remove-Item -Force -Recurse -Verbose $folder;
+	}
+
 	mkdir -Force -Verbose $folder;
 
-	foreach ($arch in @("x86", "x64"))
+	foreach ($arch in @("x86"))
+	# foreach ($arch in @("x86", "x64"))
 	{
 		cd $arch;
 		$VS_arch = if ($arch -eq "x86") {"Win32"} else {"x64"};
-		&"C:\Program Files\CMake\bin\cmake" -G "Visual Studio 16 2019" -A"$VS_arch" -DVERSION="$version" -DTEXT_LANGUAGE="$($language.Key)" -DCMAKE_BUILD_TYPE="Release" ../..;
-		&"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv" Textractor.sln /build "Release|$VS_arch";
+		&"C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -G "Visual Studio 17 2022" -A"$VS_arch" -DVERSION="$version" -DTEXT_LANGUAGE="$($language.Key)" -DCMAKE_BUILD_TYPE="Release" ../..;
+		&"C:\Program Files\Microsoft Visual Studio\2022\Preview\Common7\IDE\devenv" Textractor.sln /build "Release|$VS_arch";
 		cd ..;
 		mkdir -Force -Verbose "$folder/$arch";
 		foreach ($file in @(
@@ -53,13 +57,18 @@ foreach ($language in @{
 			"Lua",
 			"Regex Filter",
 			"Regex Replacer",
+			"Regex Replacer Process Hooked",
 			"Remove Repeated Characters",
+			"Remove Repeated Leading Sentence",
 			"Remove Repeated Phrases",
 			"Remove Repeated Phrases 2",
 			"Remove 30 Repeated Sentences",
 			"Replacer",
+			"Replacer Process Hooked",
 			"Styler",
-			"Thread Linker"
+			"Thread Linker",
+			"Yandex Translate"
+			"Sugoi Offline Translate"
 		))
 		{
 			copy -Force -Recurse -Verbose -Destination "$folder/$arch/$extension.xdll" -Path "Release_$arch/$extension.dll";
@@ -70,7 +79,8 @@ foreach ($language in @{
 
 rm -Force -Recurse -Verbose "Runtime";
 mkdir -Force -Verbose "Runtime";
-foreach ($arch in @("x86", "x64"))
+# foreach ($arch in @("x86", "x64"))
+foreach ($arch in @("x86"))
 {
 	mkdir -Force -Verbose "Runtime/$arch";
 	foreach ($file in @(
@@ -88,7 +98,7 @@ foreach ($arch in @("x86", "x64"))
 	{
 		copy -Force -Recurse -Verbose -Destination "Runtime/$arch/$file" -Path "Release_$arch/$file";
 	}
-	copy -Force -Recurse -Verbose -Destination "Runtime/$arch" -Path "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Redist/MSVC/**/$arch/Microsoft.VC142.CRT/*"
+	copy -Force -Recurse -Verbose -Destination "Runtime/$arch" -Path "C:\Program Files\Microsoft Visual Studio\2022\Preview\VC\Redist\MSVC\**\$arch\Microsoft.VC142.CRT\*"
 }
 
 rm -Force -Recurse -Verbose "Textractor";
@@ -97,5 +107,5 @@ copy -Force -Recurse -Verbose -Destination "Textractor" -Path @("Runtime/*", "Te
 &"C:\Program Files\7-Zip\7z" a "Textractor-$version-Zip-Version-English-Only.zip" Textractor/ ../INSTALL_THIS_UNICODE_FONT.ttf
 
 cd ..;
-&"C:\Program Files (x86)\Inno Setup 6\iscc" -DVERSION="$version" installer.iss;
-&"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe" sign /a /v /t "http://timestamp.digicert.com"  /fd SHA256 "Builds/Textractor-$version-Setup.exe";
+# &"C:\Program Files (x86)\Inno Setup 6\iscc" -DVERSION="$version" installer.iss;
+# &"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe" sign /a /v /t "http://timestamp.digicert.com"  /fd SHA256 "Builds/Textractor-$version-Setup.exe";
